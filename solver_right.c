@@ -8,17 +8,16 @@ double Abs(double x)
 void LU(double A[][800], double x[800], int n)
 {
   double L[n][n], U[n][n];
-  double sum_U = 0.0, sum_L = 0.0, sum_y = 0.0, sum_x = 0.0;
+  double sum_U = 0.0, sum_y = 0.0, sum_x = 0.0;
   double y[n];
   double check_sum[n], sum = 0.0, check_max;
-  int i, j, r, k, check;
+  int i, j, r, k;
   int record_order[n];
   double temp = 0.0;
-  double max = 0.0;
   int record_order_temp;
-  FILE *fp_L = fopen("L_pviot.txt", "w");
-  FILE *fp_U = fopen("U_pviot.txt", "w");
-  FILE *result = fopen("result.txt", "w");
+ // FILE *fp_L = fopen("L_pviot.txt", "w");
+ // FILE *fp_U = fopen("U_pviot.txt", "w");
+ // FILE *result = fopen("result.txt", "w");
   for ( i = 0; i < n; i++ )
   {
     record_order[i] = i;
@@ -40,7 +39,6 @@ void LU(double A[][800], double x[800], int n)
       temp = A[0][i];
       A[0][i] = A[record_order_temp][i];
       A[record_order_temp][i] = temp;
-      //printf("the %dth time to change the pviot!", record_order_temp);
     }
     temp = 0.0;
   }
@@ -73,7 +71,6 @@ void LU(double A[][800], double x[800], int n)
       }
       check_sum[i] = A[i][r] - sum;
       A[i][r] = A[i][r] - sum; 
-      //printf("check_sum[%d] = %lf\n", r, check_sum[r]);
       sum = 0.0;
     }
     check_max = check_sum[r];
@@ -82,9 +79,7 @@ void LU(double A[][800], double x[800], int n)
       if ( Abs(check_sum[k]) > Abs(check_max) )
       {
 	check_max = check_sum[k];
-	//printf("check_max = %lf\n", check_max);
 	record_order[r] = k;
-	//printf("record_order[%d] = %d\n", r, k);
       }
     }
     // 交换第r行和第record_order[r]行的数据
@@ -119,34 +114,22 @@ void LU(double A[][800], double x[800], int n)
       sum_U = 0.0;
     }    
   }
-  printf("The element of L: ");
+  /*printf("The element of L: ");
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
-      //if ( (char)L[i][j] == nan)
-      //{
-	fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
-      //}
-      //printf("L[%d][%d]=%f ", i, j, L[i][j]);
-     // fprintf(fp_L, "%lf ", L[i][j]);
+      fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
     }
-   // fprintf(fp_L, "\n");
   }
   printf("The element of U: ");
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
-      //printf("U[%d][%d]=%f ", i, j, U[i][j]);
-      //if ( (char)U[i][j] == nan)
-      //{
-	fprintf(fp_U, "U[%d][%d]=%lf\n", i, j, U[i][j]);
-      //}
-      //fprintf(fp_U, "%lf ", U[i][j]);
+      fprintf(fp_U, "U[%d][%d]=%lf\n", i, j, U[i][j]);
     }
-   // fprintf(fp_U, "\n");
-  }
+  }*/
   //求解Ly=b, Ux=y的计算公式
   y[0] = A[0][n];  
   for ( i = 1; i < n; i++ )
@@ -168,31 +151,23 @@ void LU(double A[][800], double x[800], int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  for ( i = 0; i < n; i++ )
+  /*for ( i = 0; i < n; i++ )
   {
-    //printf("解元素为: %lf\n", x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }
+  }*/
 }
 
 int main( int argc, char *argv[] )
 {
     FILE *fp = stdin;
-    FILE *fp_A_ORI = fopen("A_ORI.txt", "w");
-    FILE *fp_A_LU = fopen("A_LU.txt", "w");
     double   *a;
     int      *asub, *xa;
     int m, n, nnz;
-    //const int numarray;
     int i, j;
     int NUMCol, counter_num = 0;
     double A[800][800];
     double x[800];
     dreadMM(fp, &m, &n, &nnz, &a, &asub, &xa);
-    /*for ( i = 0; i < nnz; i++ )
-    {
-      printf("%d\n", asub[i]);
-    }*/
     printf("\n%d %d %d", m, n, nnz);
     for ( j = 0; j < n; j++ )
     {
@@ -205,44 +180,10 @@ int main( int argc, char *argv[] )
     }
     for ( i = 0; i < n; i++ )
     {
-       for ( j = 0; j < n; j++ )
-       {
-	  fprintf(fp_A_ORI, "%lf ",A[i][j]);
-       }
-       fprintf(fp_A_ORI, "\n");
-    }
-    for ( i = 0; i < n; i++ )
-    {
       A[i][n] = 1.0;
     }
-    /*for ( i = 0; i < n; i++ )
-    {
-      for ( j = 0; j < n; j++ )
-      {
-	printf("A[%d][%d]=%f ", i, j, A[i][j]);
-      }
-    }*/
     LU( A, x, n);
-    /*for ( i = 0; i < n; i++ )
-    {
-      for ( j = 0; j < n; j++ )
-      {
-	printf("A[%d][%d]=%f ", i, j, A[i][j]);
-      }
-    }*/
-    for ( i = 0; i < n; i++ )
-    {
-       for ( j = 0; j < n; j++ )
-       {
-	  fprintf(fp_A_LU, "%lf	",A[i][j]);
-       }
-       fprintf(fp_A_LU, "\n");
-    }
-     
-    /*for ( i = 0; i < n; i++ )
-    {
-      printf("在main函数中的解元素为: %lf\n", x[i]);
-    }*/	
+    printf("程序正常结束");
     return 0;
 }
 
