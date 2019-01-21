@@ -4,4 +4,4 @@
 
 2) write a makefile. a simple one would be enough.
 
-3) 
+3) change the array references to pointers. 
