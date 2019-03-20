@@ -2,10 +2,6 @@
 # include <stdlib.h>
 # include "lu.h"
 
-double Abs(double x)
-{
-  return x < 0 ? -x : x;
-}
 void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 {
   double **L, **U;
