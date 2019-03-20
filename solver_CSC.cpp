@@ -1,5 +1,6 @@
-# include "slu_ddefs.h"
-# include <stdio.h>
+//# include "slu_ddefs.h"
+#include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 #include <string.h>
 #include <iostream>
@@ -438,6 +439,8 @@ int main( int argc, char *argv[] )
     int nItems;
     int numRows;
     int numCols;
+    int i;
+    double sum_time;
     //printf(" This is only for testing! \n");
     //dreadMM(fp, &m, &n, &nnz, &a, &asub, &xa);
     readMatrix(argv[1], &h_val, &h_cols, &h_rowDelimiters,&nItems, &numRows, &numCols);
@@ -474,10 +477,14 @@ int main( int argc, char *argv[] )
     }*/
     x = ( double * )malloc(sizeof(double) * numCols);
     printf("\n%d %d %d\n", numRows, numCols, nItems);
-    start = microtime();
-    LU( h_val, h_cols, h_rowDelimiters, x, numRows);
-    finish = microtime() - start; 
-    printf( "The cost time of LU function is: %f seconds\n", finish );  
+    for ( i = 0; i < 10; i++ )
+    {
+      start = microtime();
+      LU( h_val, h_cols, h_rowDelimiters, x, numRows);
+      finish = microtime() - start; 
+      sum_time += finish;
+    }
+    printf( "The average cost time of LU function is: %f seconds\n", sum_time/10 );  
     printf("Normal end of execution");
     free(x); 
     return 0;
