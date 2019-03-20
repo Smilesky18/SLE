@@ -1,4 +1,4 @@
-#include "lu.h"
+#include "lib/lu.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/time.h>
