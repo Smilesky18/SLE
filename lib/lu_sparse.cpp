@@ -14,9 +14,9 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   double *l, *u, l_value;
   double temp = 0.0;
   int record_order_temp;
-  FILE *fp_L = fopen("L_CSC.txt", "w");
-  FILE *fp_U = fopen("U_CSC.txt", "w");
-  FILE *result = fopen("result_CSC.txt", "w");
+  FILE *fp_L = fopen("result/Sparse_L.txt", "w");
+  FILE *fp_U = fopen("result/Sparse_U.txt", "w");
+  FILE *result = fopen("result/Sparse_solution.txt", "w");
   L = ( double ** )malloc(sizeof(double *) * n);
   U = ( double ** )malloc(sizeof(double *) * n);
   int sum_nonz_L = 0, sum_nonz_U = 0;
@@ -41,7 +41,7 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     p[i] = xa[i];
     row_num[i] = xa[i+1] - xa[i];
   }
-  printf(" before the LU decomposition ");
+  //printf(" before the LU decomposition ");
   for ( r = 0; r < n; r++ )
   {
     for ( i = r; i < n; i++ )
@@ -125,9 +125,9 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     }
   }
   L_ratio = (1 - sum_nonz_L/sum_element)*100;
-  printf("sum_element = %f\n", sum_element);
-  printf("sum_nonz_L = %d\n", sum_nonz_L);
-  printf("The sparsity of L is: %lf%%\n", L_ratio);
+  //printf("sum_element = %f\n", sum_element);
+  //printf("sum_nonz_L = %d\n", sum_nonz_L);
+  //printf("The sparsity of L is: %lf%%\n", L_ratio);
   //printf("The element of U: ");
   //printf(" the value of sum_nonz_U is: %d\n", sum_nonz_U);
   for ( i = 0; i < n; i++ )
@@ -141,8 +141,8 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     }
   }
   U_ratio = (1 - sum_nonz_U/sum_element)*100;
-  printf("sum_nonz_U = %d\n", sum_nonz_U);
-  printf("The sparsity of U is: %lf%%\n", U_ratio);
+  //printf("sum_nonz_U = %d\n", sum_nonz_U);
+  //printf("The sparsity of U is: %lf%%\n", U_ratio);
   //solve Ly=b && Ux=y
   y[0] = 1.0;  
   for ( i = 1; i < n; i++ )

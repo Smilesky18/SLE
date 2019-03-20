@@ -16,9 +16,9 @@ void lu_dense(double **A, double *x, int n)
   int *record_order;
   double temp = 0.0;
   int record_order_temp;
-  FILE *fp_L = fopen("L_right.txt", "w");
-  FILE *fp_U = fopen("U_right.txt", "w");
-  FILE *result = fopen("result_right.txt", "w");
+  FILE *fp_L = fopen("result/Dense_L.txt", "w");
+  FILE *fp_U = fopen("result/Dense_U.txt", "w");
+  FILE *result = fopen("result/Dense_solution.txt", "w");
   L = ( double ** )malloc(sizeof(double *) * n);
   U = ( double ** )malloc(sizeof(double *) * n);
   int sum_nonz_L = 0, sum_nonz_U = 0;
@@ -64,26 +64,25 @@ void lu_dense(double **A, double *x, int n)
     }
     temp = 0.0;
   }
-  //将调换的次序记录在record_order中，然后调换矩阵中的数值
   //record_order[0] = record_order_temp;
-  printf( " A[1][0] = %f\n ", A[1][0]);
-  //U的第一行的解向量
+  //printf( " A[1][0] = %f\n ", A[1][0]);
+  //the first row of U
   for ( i = 0; i < n; i++ )
   {
     U[0][i] = A[0][i];
   }
-  //L的第一列的解向量
+  //the first column of L
   for ( i = 1; i < n; i++ )
   {
     L[i][0] = A[i][0]/U[0][0];
   }
-  printf( " L[1][0] = %f\n", L[1][0] );
-  //对L的对角线元素赋值为1
+  //printf( " L[1][0] = %f\n", L[1][0] );
+  //The diagonal element of L is 1
   for ( i = 0; i < n; i++ )
   {
     L[i][i] = 1;
   }
-  // 从第1步开始，进行选主元的LU分解法
+  // start the LU from the second row/column
   for ( r = 1; r < n; r++ )
   {
     for ( i = r; i < n; i++ )
@@ -110,7 +109,7 @@ void lu_dense(double **A, double *x, int n)
 	record_order[r] = k;
       }
     }
-    // 交换第r行和第record_order[r]行的数据
+    // exchange the row of r and record_order[r]
     if ( record_order[r] != r )
     {
       //printf(" row interchanges!! ");
@@ -128,7 +127,7 @@ void lu_dense(double **A, double *x, int n)
 	L[record_order_temp][i] = temp;
       }
     }
-    // 计算U的第r行元素和L的第r列元素
+    // get the r row of U and the r column of L
     U[r][r] = A[r][r];
     //printf("check_max = %f\n", U[r][r]);
     for ( i = r+1; i < n; i++ ) 
@@ -146,7 +145,7 @@ void lu_dense(double **A, double *x, int n)
     }    
   }
   //printf("The element of L: ");
-  printf("the value of sum_nonz_L is: %d\n", sum_nonz_L);
+  //printf("the value of sum_nonz_L is: %d\n", sum_nonz_L);
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
@@ -158,11 +157,11 @@ void lu_dense(double **A, double *x, int n)
     }
   }
   L_ratio = (1 - sum_nonz_L/sum_element)*100;
-  printf("sum_element = %f\n", sum_element);
-  printf("sum_nonz_L = %d\n", sum_nonz_L);
-  printf("The sparsity of L is: %lf%%\n", L_ratio);
+  //printf("sum_element = %f\n", sum_element);
+  //printf("sum_nonz_L = %d\n", sum_nonz_L);
+  //printf("The sparsity of L is: %lf%%\n", L_ratio);
   //printf("The element of U: ");
-  printf(" the value of sum_nonz_U is: %d\n", sum_nonz_U);
+  //printf(" the value of sum_nonz_U is: %d\n", sum_nonz_U);
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
@@ -174,9 +173,9 @@ void lu_dense(double **A, double *x, int n)
     }
   }
   U_ratio = (1 - sum_nonz_U/sum_element)*100;
-  printf("sum_nonz_U = %d\n", sum_nonz_U);
-  printf("The sparsity of U is: %lf%%\n", U_ratio);
-  //求解Ly=b, Ux=y的计算公式
+  //printf("sum_nonz_U = %d\n", sum_nonz_U);
+  //printf("The sparsity of U is: %lf%%\n", U_ratio);
+  //Ly = b Ux = y
   y[0] = A[0][n];  
   for ( i = 1; i < n; i++ )
   {

@@ -36,12 +36,27 @@ int main( int argc, char *argv[] )
     double sum_time;
     fp = fopen(argv[1], "r");
     dreadMM(fp, &m, &n, &nnz, &a, &asub, &xa);
+    /*printf(" m = %d\n ", m);
+    printf(" n = %d\n ", n);
+    printf(" nnz = %d\n ", nnz);*/
     readMatrix(argv[1], &h_val, &h_cols, &h_rowDelimiters,&nItems, &numRows, &numCols);
-    printf(" nItems = %d\n ", nItems);
-    printf(" numRows = %d\n ", numRows);
+    /*printf(" numRows = %d\n ", numRows);
     printf(" numCols = %d\n ", numCols);
+    printf(" nItems = %d\n ", nItems);*/
     x = ( double * )malloc(sizeof(double) * numCols);
-    printf("\n%d %d %d\n", numRows, numCols, nItems);
+    A = ( double ** )malloc(sizeof(double *) * m);                                                                                                                            
+    int ncol = n + 1;                                                                                                                                                         
+    for ( i = 0; i < m; i++ )                                                                                                                                                 
+    {                                                                                                                                                                         
+      A[i] = ( double * )malloc(sizeof(double) * ncol);                                                                                                                       
+    }                                                                                                                                                                         
+    for ( i = 0; i < m; i++ )                                                                                                                                                 
+    {                                                                                                                                                                         
+      for ( j = 0; j < n; j++ )                                                                                                                                               
+      {                                                                                                                                                                       
+	A[i][j] = 0.0;                                                                                                                                                            
+      }                                                                                                                                                                       
+    }                
     for ( j = 0; j < n; j++ )
     {
       NUMCol = xa[j+1] - xa[j];
@@ -62,7 +77,7 @@ int main( int argc, char *argv[] )
       finish = microtime() - start; 
       sum_time += finish;
     }
-    printf( "The average cost time of lu_DENSE function is: %f seconds\n", sum_time/10 );  
+    printf("The average cost time of lu_DENSE function is: %f seconds\n", sum_time/10 );  
     for ( i = 0; i < 10; i++ )
     {
       start = microtime();
@@ -70,7 +85,7 @@ int main( int argc, char *argv[] )
       finish = microtime() - start; 
       sum_time += finish;
     }
-    printf( "The average cost time of lu_SPARSE function is: %f seconds\n", sum_time/10 ); 
+    printf("The average cost time of lu_SPARSE function is: %f seconds\n", sum_time/10 ); 
     printf("Normal end of execution");
     free(x); 
     return 0;
