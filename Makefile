@@ -15,6 +15,8 @@
 
 
 all: main.cpp
-	g++ -g lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp main.cpp -lsuperlu -lblas -o main
+	g++ lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp -lsuperlu -lblas -o main
+debug: main.cpp
+	g++ -g lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp -lsuperlu -lblas -o main.g
 clean:
 	rm -rf *.o main

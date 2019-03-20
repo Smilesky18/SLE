@@ -70,6 +70,13 @@ int main( int argc, char *argv[] )
     {
       A[i][n] = 1.0;
     }
+    /*for ( i = 0; i < 10; i++ )
+    {
+      start = microtime();
+      super_lu( m, n, nnz, xa, asub, a );
+      finish = microtime() - start; 
+      sum_time += finish;
+    }*/
     for ( i = 0; i < 10; i++ )
     {
       start = microtime();
