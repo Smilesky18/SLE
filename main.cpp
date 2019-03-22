@@ -9,21 +9,21 @@ int main( int argc, char *argv[] )
     double **A;
     double start_super, start_sparse, start_dense, finish_super, finish_sparse, finish_dense;
     double time_super, time_sparse, time_dense;
-    double *h_val;
-    int *h_cols;       
-    int *h_rowDelimiters;
+    double *row_vals;
+    int *colIdx;       
+    int *rowOffset;
     // Number of non-zero elements in the matrix
     int nItems;
     int numRows;
     int numCols;
     int NUMCol, counter_num = 0;
-    double   *a;
-    int      *asub, *xa;
+    double   *col_vals;
+    int      *rowIdx, *colOffset;
     int m, n, nnz;
     int i, j;
     fp = fopen(argv[1], "r");
-    dreadMM(fp, &m, &n, &nnz, &a, &asub, &xa);
-    readMatrix(argv[1], &h_val, &h_cols, &h_rowDelimiters, &nItems, &numRows, &numCols);
+    dreadMM(fp, &m, &n, &nnz, &col_vals, &rowIdx, &colOffset);
+    readMatrix(argv[1], &row_vals, &colIdx, &rowOffset, &nItems, &numRows, &numCols);
     x = ( double * )malloc(sizeof(double) * numCols);
     A = ( double ** )malloc(sizeof(double *) * m);  
     int ncol = n + 1;                                                                                                                                                         
@@ -40,10 +40,10 @@ int main( int argc, char *argv[] )
     }              
     for ( j = 0; j < n; j++ )
     {
-      NUMCol = xa[j+1] - xa[j];
+      NUMCol = colOffset[j+1] - colOffset[j];
       for ( i = 0; i < NUMCol; i++ )
       {
-	A[asub[counter_num]][j] = a[counter_num];
+	A[rowIdx[counter_num]][j] = col_vals[counter_num];
 	counter_num++;
       }
     }
@@ -65,7 +65,7 @@ int main( int argc, char *argv[] )
     for ( i = 0; i < 10; i++ )
     {
       start_sparse = microtime();
-      lu_sparse( h_val, h_cols, h_rowDelimiters, x, numRows);
+      lu_sparse_1( row_vals, colIdx, rowOffset, x, numRows);
       finish_sparse = microtime() - start_sparse; 
       time_sparse += finish_sparse;
     }

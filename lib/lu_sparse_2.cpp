@@ -2,7 +2,7 @@
 # include <stdlib.h>
 # include "lu.h"
 
-void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
+void lu_sparse_2(double *vals, int *colIdx, int *rowOffset, double *x, int n)
 {
   double **L, **U;
   double sum_y = 0.0, sum_x = 0.0;
@@ -43,17 +43,17 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   
   for ( i = 0; i < n; i++ )
   {
-    p[i] = xa[i];
-    row_num[i] = xa[i+1] - xa[i];
+    p[i] = rowOffset[i];
+    row_num[i] = rowOffset[i+1] - rowOffset[i];
   }
   //printf(" before the LU decomposition ");
   for ( r = 0; r < n; r++ )
   {
     for ( i = r; i < n; i++ )
     {
-      if ( asub[p[i]] == r && row_num[i] > 0 )
+      if ( colIdx[p[i]] == r && row_num[i] > 0 )
       {
-	  l[i] = a[p[i]];
+	  l[i] = vals[p[i]];
 	  p[i]++;
 	  row_num[i]--;
       }
@@ -100,7 +100,7 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     }
     for ( j = 0; j < row_num[r]; j++ )
     {
-      u[asub[p[r]+j]] = a[p[r]+j];
+      u[colIdx[p[r]+j]] = vals[p[r]+j];
     }
     for ( i = r+1; i < n; i++ ) 
     {

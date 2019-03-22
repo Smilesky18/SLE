@@ -17,8 +17,8 @@
 all: main.cpp
 	#g++ lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive /home/robot/my_solver/lu_solver_yzy/build/SRC/libsuperlu.a -lblas -lm -o main -O3
 #	g++ lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive /usr/local/lib/libsuperlu.a -lblas -lm -o main -O3
-	g++ lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive -lsuperlu -lblas -lm -o main -O3
+	g++ lib/lu_dense.cpp lib/lu_sparse_1.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive -lsuperlu -lblas -lm -o main -O3
 debug: main.cpp
-	g++ -g lib/lu_dense.cpp lib/lu_sparse.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive -lsuperlu -lblas -o main.g
+	g++ -g lib/lu_dense.cpp lib/lu_sparse_1.cpp lib/readMatrix.cpp lib/super_lu.cpp main.cpp lib/microtime.cpp -fpermissive -lsuperlu -lblas -o main.g
 clean:
 	rm -rf  main main.g
