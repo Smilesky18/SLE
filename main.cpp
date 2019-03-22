@@ -54,30 +54,30 @@ int main( int argc, char *argv[] )
     printf(" m = %d  ", m);
     printf(" n = %d  ", n);
     printf(" nnz = %d\n ", nnz);
-    for ( i = 0; i < 10; i++ )
+    /*for ( i = 0; i < 10; i++ )
     {
       start_super = microtime();
       super_lu( argv[1] );
       finish_super = microtime() - start_super;
       time_super += finish_super;
     }
-    printf("The average cost time of super_lu function is: %f seconds\n", time_super/10);
-    for ( i = 0; i < 10; i++ )
-    {
+    printf("The average cost time of super_lu function is: %f seconds\n", time_super/10);*/
+    //for ( i = 0; i < 10; i++ )
+    //{
       start_sparse = microtime();
       lu_sparse( h_val, h_cols, h_rowDelimiters, x, numRows);
       finish_sparse = microtime() - start_sparse; 
-      time_sparse += finish_sparse;
-    }
-    printf("The average cost time of lu_SPARSE function is: %f seconds\n", time_sparse/10);  
-    for ( i = 0; i < 10; i++ )
+      //time_sparse += finish_sparse;
+    //}
+    printf("The average cost time of lu_SPARSE function is: %f seconds\n", finish_sparse);  
+    /*for ( i = 0; i < 10; i++ )
     {
       start_dense = microtime();
       lu_dense(A, x, n);
       finish_dense = microtime() - start_dense; 
       time_dense += finish_dense;
     }
-    printf("The average cost time of lu_DENSE function is: %f seconds\n", time_dense/10); 
+    printf("The average cost time of lu_DENSE function is: %f seconds\n", time_dense/10);*/ 
     printf("Normal end of execution");
     free(x); 
     return 0;

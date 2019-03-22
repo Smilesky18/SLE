@@ -22,8 +22,8 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   int sum_nonz_L = 0, sum_nonz_U = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
-  //double start, finish;
-  //start = microtime();
+  double start, finish, start_l, finish_l, time_l, start_checksum, finish_checksum, time_checksum, start_max, finish_max, 
+  time_max, start_exchange, finish_exchange, time_exchange, start_u, finish_u, time_u, start_LU, finish_LU, time_LU;
   for ( i = 0; i < n; i++ )
   {
     L[i] = ( double * )malloc(sizeof(double) * n);
@@ -33,22 +33,21 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   {
     L[i][i] = 1.0;
   }
-  //finish = microtime() - start;
-  //printf("the time of allocating L&U is %lf\n", finish);
   p = ( int * )malloc(sizeof(int) * n );
   row_num = ( int *)malloc(sizeof(int) * n );
   l = ( double *)malloc(sizeof(double) * n );
   u = ( double *)malloc(sizeof(double) * n );
   check_sum = ( double *)malloc(sizeof(double) * n );
-  
   for ( i = 0; i < n; i++ )
   {
     p[i] = xa[i];
     row_num[i] = xa[i+1] - xa[i];
   }
   //printf(" before the LU decomposition ");
+  start = microtime();
   for ( r = 0; r < n; r++ )
   {
+    start_l = microtime();
     for ( i = r; i < n; i++ )
     {
       if ( asub[p[i]] == r && row_num[i] > 0 )
@@ -58,6 +57,10 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 	  row_num[i]--;
       }
     }
+    finish_l = microtime() - start_l;
+    time_l += finish_l;
+    
+    start_checksum = microtime();
     for ( i = r; i < n; i++ )
     {
       for ( k = 0; k < r; k++ )
@@ -68,8 +71,12 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
       l[i] = l[i] - sum;
       sum = 0.0;
     }
+    finish_checksum = microtime() - start_checksum;
+    time_checksum += finish_checksum;
+   
     check_max = check_sum[r];
     record_order_temp = r;
+    start_max = microtime();
     for ( k = r+1; k < n; k++ )
     {
       if ( Abs(check_sum[k]) > Abs(check_max) )
@@ -78,6 +85,10 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 	record_order_temp = k;
       }
     }
+    finish_max = microtime() - start_max;
+    time_max += finish_max;
+    
+    start_exchange = microtime();
     U[r][r] = check_max;
     i = p[r];
     j = row_num[r];
@@ -98,10 +109,18 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 	L[record_order_temp][i] = temp;
       }
     }
+    finish_exchange = microtime() - start_exchange;
+    time_exchange += finish_exchange;
+    
+    start_u = microtime();
     for ( j = 0; j < row_num[r]; j++ )
     {
       u[asub[p[r]+j]] = a[p[r]+j];
     }
+    finish_u = microtime() - start_u;
+    time_u += finish_u;
+    
+    start_LU = microtime();
     for ( i = r+1; i < n; i++ ) 
     {
       L[i][r] = l[i] / U[r][r];
@@ -112,12 +131,24 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
       U[r][i] = u[i] - sum;
       sum = 0.0;
     }
+    finish_LU = microtime() - start_LU;
+    time_LU += finish_LU;
+    
     for ( i = 0; i < n; i++ )
     {
       l[i] = 0.0;
       u[i] = 0.0;
     }
   }
+  finish = microtime() - start;
+  printf("The time of LU decomposition is %lf\n", finish);
+  printf("The time of generating l array is %lf\n", time_l);
+  printf("The time of generating check_sum array is %lf\n", time_checksum);
+  printf("The time of generating max value is %lf\n", time_max);
+  printf("The time of exchanging the value is %lf\n", time_exchange);
+  printf("The time of generating u array is %lf\n", time_u);
+  printf("The time of generating LU value is %lf\n", time_LU);
+  printf("The sum short time if %lf\n", time_l+time_max+time_exchange+time_u);
   y = ( double * )malloc(sizeof(double) * n);
  /* for ( i = 0; i < n; i++ )
   {
