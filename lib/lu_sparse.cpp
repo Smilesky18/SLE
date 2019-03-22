@@ -22,6 +22,8 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   int sum_nonz_L = 0, sum_nonz_U = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
+  //double start, finish;
+  //start = microtime();
   for ( i = 0; i < n; i++ )
   {
     L[i] = ( double * )malloc(sizeof(double) * n);
@@ -31,11 +33,14 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   {
     L[i][i] = 1.0;
   }
+  //finish = microtime() - start;
+  //printf("the time of allocating L&U is %lf\n", finish);
   p = ( int * )malloc(sizeof(int) * n );
   row_num = ( int *)malloc(sizeof(int) * n );
   l = ( double *)malloc(sizeof(double) * n );
   u = ( double *)malloc(sizeof(double) * n );
   check_sum = ( double *)malloc(sizeof(double) * n );
+  
   for ( i = 0; i < n; i++ )
   {
     p[i] = xa[i];
@@ -114,7 +119,7 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     }
   }
   y = ( double * )malloc(sizeof(double) * n);
-  for ( i = 0; i < n; i++ )
+ /* for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
@@ -140,7 +145,7 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 	sum_nonz_U++;
     }
   }
-  U_ratio = (1 - sum_nonz_U/sum_element)*100;
+  U_ratio = (1 - sum_nonz_U/sum_element)*100;*/
   //printf("sum_nonz_U = %d\n", sum_nonz_U);
   //printf("The sparsity of U is: %lf%%\n", U_ratio);
   //solve Ly=b && Ux=y
@@ -164,11 +169,11 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  for ( i = 0; i < n; i++ )
+  /*for ( i = 0; i < n; i++ )
   {
     //printf("x[%d] = %f\n", i, x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }
+  }*/
   for ( i = 0; i < n; i++ )
   {
     //free(A[i]);

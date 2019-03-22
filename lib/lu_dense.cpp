@@ -146,7 +146,7 @@ void lu_dense(double **A, double *x, int n)
   }
   //printf("The element of L: ");
   //printf("the value of sum_nonz_L is: %d\n", sum_nonz_L);
-  for ( i = 0; i < n; i++ )
+  /*for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
@@ -172,7 +172,7 @@ void lu_dense(double **A, double *x, int n)
 	sum_nonz_U++;
     }
   }
-  U_ratio = (1 - sum_nonz_U/sum_element)*100;
+  U_ratio = (1 - sum_nonz_U/sum_element)*100;*/
   //printf("sum_nonz_U = %d\n", sum_nonz_U);
   //printf("The sparsity of U is: %lf%%\n", U_ratio);
   //Ly = b Ux = y
@@ -196,11 +196,11 @@ void lu_dense(double **A, double *x, int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  for ( i = 0; i < n; i++ )
+  /*for ( i = 0; i < n; i++ )
   {
     //printf("x[%d]=%lf ", i, x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }
+  }*/
   for ( i = 0; i < n; i++ )
   {
     //free(A[i]);

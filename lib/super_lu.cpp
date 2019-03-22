@@ -1,10 +1,17 @@
 #include "lu.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-void super_lu( int m, int n, int nnz, int *xa, int *asub, double *a )
+int super_lu( char *filename )
 {
     SuperMatrix A;
     NCformat *Astore;
+    DNformat *Bstore;
+    int *colptr_B;
+    int *rowind_B;
+    double *nzval_B, *nzval_A;
+    double   *a;
+    int      *asub, *xa;
     int      *perm_c; /* column permutation vector */
     int      *perm_r; /* row permutations from partial pivoting */
     SuperMatrix L;      /* factor L */
@@ -12,21 +19,44 @@ void super_lu( int m, int n, int nnz, int *xa, int *asub, double *a )
     SuperMatrix U;      /* factor U */
     NCformat *Ustore;
     SuperMatrix B;
-    int      nrhs, ldx, info;
+    int      nrhs, ldx, info, m, n, nnz;
     double   *xact, *rhs;
     mem_usage_t   mem_usage;
     superlu_options_t options;
     SuperLUStat_t stat;
-    int i;
-    FILE *result = fopen("result/SuperLU_solution.txt", "w");
+    FILE      *fp = fopen(filename, "r");
+    int i, j;
+    int NUMCol, counter_num = 0;
     
 #if ( DEBUGlevel>=1 )
-    CHECK_MALLOC("Enter super_lu()");
+    CHECK_MALLOC("Enter main()");
 #endif
+
+    /* Set the default input options:
+	options.Fact = DOFACT;
+        options.Equil = YES;
+    	options.ColPerm = COLAMD;
+	options.DiagPivotThresh = 1.0;
+    	options.Trans = NOTRANS;
+    	options.IterRefine = NOREFINE;
+    	options.SymmetricMode = NO;
+    	options.PivotGrowth = NO;
+    	options.ConditionNumber = NO;
+    	options.PrintStat = YES;
+     */
     set_default_options(&options);
 
+#if 0
+    /* Read the matrix in Harwell-Boeing format. */
+    dreadhb(fp, &m, &n, &nnz, &a, &asub, &xa);
+#else
+    /* Read the matrix in Matrix Market format. */
+    dreadMM(fp, &m, &n, &nnz, &a, &asub, &xa);
+#endif
+
     dCreate_CompCol_Matrix(&A, m, n, nnz, a, asub, xa, SLU_NC, SLU_D, SLU_GE);
-    //Astore = A.Store;
+    Astore = A.Store;
+    nzval_A = Astore->nzval;
     //printf("Dimension %dx%d; # nonzeros %d\n", A.nrow, A.ncol, Astore->nnz);
     
     nrhs   = 1;
@@ -36,6 +66,12 @@ void super_lu( int m, int n, int nnz, int *xa, int *asub, double *a )
       rhs[i] = 1.0;
     }
     dCreate_Dense_Matrix(&B, m, nrhs, rhs, m, SLU_DN, SLU_D, SLU_GE);
+    /*for ( i = 0; i < m; i++ )
+      printf(" the element in rhs is: %f\n", rhs[i]);*/
+    Bstore = (DNformat *)B.Store;
+    nzval_B = (double *)Bstore->nzval;
+    /*for (i=0; i < Bstore->lda; i++)
+      printf("B的第%d个元素是: %lf\n",i, *(nzval_B+i));*/
     //xact = doubleMalloc(n * nrhs);
     //ldx = n;
     //dGenXtrue(n, nrhs, xact, ldx);
@@ -46,55 +82,25 @@ void super_lu( int m, int n, int nnz, int *xa, int *asub, double *a )
 
     /* Initialize the statistics variables. */
     StatInit(&stat);
+    Bstore = (DNformat *)B.Store;
+    nzval_B = (double *)Bstore->nzval;
+    /*for (i=0; i < Bstore->lda; i++)
+      printf("before dgssv B的第%d个元素是: %lf\n",i, *(nzval_B+i));*/
     dgssv(&options, &A, perm_c, perm_r, &L, &U, &B, &stat, &info);
-    
-    if ( info == 0 ) {
-
-	/* This is how you could access the solution matrix. */
-        double *sol = (double*) ((DNformat*) B.Store)->nzval;
-	for ( i = 0; i < ((DNformat*) B.Store)->lda; i++ )
-	{
-	  fprintf(result, "x[%d]=%lf\n", i, sol[i]);
-	  //printf("The solution of the LS is %f\n", sol[i]);
-	}
-	 /* Compute the infinity norm of the error. */
-	dinf_norm_error(nrhs, &B, xact);
-
-	Lstore = (SCformat *) L.Store;
-	Ustore = (NCformat *) U.Store;
-	double *Lsol = (double*) (Lstore->nzval);
-	double *Usol = (double*) (Ustore->nzval);
-	/*for ( i = 0; i < Lstore->nnz; i++ )
-	{
-	  printf("The non-zero value of L is %f\n", Lsol[i]);
-	}
-	for ( i = 0; i < Ustore->nnz; i++ )
-	{
-	  printf("The non-zero value of U is %f\n", Usol[i]);
-	}*/
-    	/**printf("No of nonzeros in factor L = %d\n", Lstore->nnz);
-    	printf("No of nonzeros in factor U = %d\n", Ustore->nnz);
-    	printf("No of nonzeros in L+U = %d\n", Lstore->nnz + Ustore->nnz - n);
-    	printf("FILL ratio = %.1f\n", (float)(Lstore->nnz + Ustore->nnz - n)/nnz);*/
-	
-	dQuerySpace(&L, &U, &mem_usage);
-	//printf("L\\U MB %.3f\ttotal MB needed %.3f\n",
-	//       mem_usage.for_lu/1e6, mem_usage.total_needed/1e6);
-	
-    } else {
-	//printf("dgssv() error returns INFO= %d\n", info);
-	if ( info <= n ) { /* factorization completes */
-	    dQuerySpace(&L, &U, &mem_usage);
-	    //printf("L\\U MB %.3f\ttotal MB needed %.3f\n",
-	//	   mem_usage.for_lu/1e6, mem_usage.total_needed/1e6);
-	}
-    }
-
+    Bstore = (DNformat *)B.Store;
+    nzval_B = (double *)Bstore->nzval;
+    //printf("after dgssv the lda of B is: %d\n", Bstore->lda);
+    //for (i=0; i < Bstore->lda; i++)
+    //  printf("after dgssv B的第%d个元素是: %lf\n",i, *(nzval_B+i));
+    double *sol = (double*) ((DNformat*) B.Store)->nzval;
+    //for (i=0; i < Bstore->lda; i++)
+    //  printf("解元素为: %lf\n", sol[i]);
+  
     if ( options.PrintStat ) StatPrint(&stat);
     StatFree(&stat);
 
     SUPERLU_FREE (rhs);
-    //SUPERLU_FREE (xact);
+    SUPERLU_FREE (xact);
     SUPERLU_FREE (perm_r);
     SUPERLU_FREE (perm_c);
     Destroy_CompCol_Matrix(&A);
@@ -103,7 +109,8 @@ void super_lu( int m, int n, int nnz, int *xa, int *asub, double *a )
     Destroy_CompCol_Matrix(&U);
 
 #if ( DEBUGlevel>=1 )
-    CHECK_MALLOC("Exit super_lu()");
+    CHECK_MALLOC("Exit main()");
 #endif
+    
 }
 

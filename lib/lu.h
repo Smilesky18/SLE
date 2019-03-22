@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <sys/time.h>
 #include <slu_ddefs.h>
 
 
@@ -27,7 +28,9 @@ extern void lu_dense(double **, double *, int );
 extern void lu_sparse(double *, int *, int *, double *, int );
 extern void readMatrix(char *, double **, int **, int **, int *, int *, int *);
 extern double Abs(double );
-extern void super_lu(int , int , int , int *, int *, double *);
+extern int super_lu(char *);
+extern double microtime();
+//extern void super_lu(FILE *);
 
 
 
