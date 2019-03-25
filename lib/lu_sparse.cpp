@@ -2,7 +2,7 @@
 # include <stdlib.h>
 # include "lu.h"
 
-void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
+double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
 {
   double **L, **U;
   double sum_y = 0.0, sum_x = 0.0;
@@ -216,5 +216,6 @@ void lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   free(y);
   free(check_sum);
   //free(change_order);
+  return x;
 }
 

@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-int super_lu( char *filename )
+double* super_lu( char *filename, double *x)
 {
     SuperMatrix A;
     NCformat *Astore;
@@ -10,6 +10,7 @@ int super_lu( char *filename )
     int *colptr_B;
     int *rowind_B;
     double *nzval_B, *nzval_A;
+    //double *sol;
     double   *a;
     int      *asub, *xa;
     int      *perm_c; /* column permutation vector */
@@ -28,22 +29,6 @@ int super_lu( char *filename )
     int i, j;
     int NUMCol, counter_num = 0;
     
-#if ( DEBUGlevel>=1 )
-    CHECK_MALLOC("Enter main()");
-#endif
-
-    /* Set the default input options:
-	options.Fact = DOFACT;
-        options.Equil = YES;
-    	options.ColPerm = COLAMD;
-	options.DiagPivotThresh = 1.0;
-    	options.Trans = NOTRANS;
-    	options.IterRefine = NOREFINE;
-    	options.SymmetricMode = NO;
-    	options.PivotGrowth = NO;
-    	options.ConditionNumber = NO;
-    	options.PrintStat = YES;
-     */
     set_default_options(&options);
 
 #if 0
@@ -57,7 +42,6 @@ int super_lu( char *filename )
     dCreate_CompCol_Matrix(&A, m, n, nnz, a, asub, xa, SLU_NC, SLU_D, SLU_GE);
     Astore = A.Store;
     nzval_A = Astore->nzval;
-    //printf("Dimension %dx%d; # nonzeros %d\n", A.nrow, A.ncol, Astore->nnz);
     
     nrhs   = 1;
     if ( !(rhs = doubleMalloc(m * nrhs)) ) ABORT("Malloc fails for rhs[].");
@@ -70,8 +54,6 @@ int super_lu( char *filename )
       printf(" the element in rhs is: %f\n", rhs[i]);*/
     Bstore = (DNformat *)B.Store;
     nzval_B = (double *)Bstore->nzval;
-    /*for (i=0; i < Bstore->lda; i++)
-      printf("B的第%d个元素是: %lf\n",i, *(nzval_B+i));*/
     //xact = doubleMalloc(n * nrhs);
     //ldx = n;
     //dGenXtrue(n, nrhs, xact, ldx);
@@ -82,35 +64,28 @@ int super_lu( char *filename )
 
     /* Initialize the statistics variables. */
     StatInit(&stat);
-    Bstore = (DNformat *)B.Store;
-    nzval_B = (double *)Bstore->nzval;
-    /*for (i=0; i < Bstore->lda; i++)
-      printf("before dgssv B的第%d个元素是: %lf\n",i, *(nzval_B+i));*/
+    //Bstore = (DNformat *)B.Store;
+    //nzval_B = (double *)Bstore->nzval;
     dgssv(&options, &A, perm_c, perm_r, &L, &U, &B, &stat, &info);
-    Bstore = (DNformat *)B.Store;
-    nzval_B = (double *)Bstore->nzval;
-    //printf("after dgssv the lda of B is: %d\n", Bstore->lda);
-    //for (i=0; i < Bstore->lda; i++)
-    //  printf("after dgssv B的第%d个元素是: %lf\n",i, *(nzval_B+i));
-    double *sol = (double*) ((DNformat*) B.Store)->nzval;
-    //for (i=0; i < Bstore->lda; i++)
-    //  printf("解元素为: %lf\n", sol[i]);
-  
+    //Bstore = (DNformat *)B.Store;
+    //nzval_B = (double *)Bstore->nzval;
+    x = (double*) ((DNformat*) B.Store)->nzval;
+    /*for (i=0; i < Bstore->lda; i++)
+    {
+      printf("x[%d] = %lf\n", i, x[i]);
+    }*/
     if ( options.PrintStat ) StatPrint(&stat);
     StatFree(&stat);
 
-    SUPERLU_FREE (rhs);
-    SUPERLU_FREE (xact);
-    SUPERLU_FREE (perm_r);
-    SUPERLU_FREE (perm_c);
-    Destroy_CompCol_Matrix(&A);
-    Destroy_SuperMatrix_Store(&B);
-    Destroy_SuperNode_Matrix(&L);
-    Destroy_CompCol_Matrix(&U);
+   // SUPERLU_FREE (rhs);
+   // SUPERLU_FREE (xact);
+   // SUPERLU_FREE (perm_r);
+   // SUPERLU_FREE (perm_c);
+   // Destroy_CompCol_Matrix(&A);
+   // Destroy_SuperMatrix_Store(&B);
+   // Destroy_SuperNode_Matrix(&L);
+  //  Destroy_CompCol_Matrix(&U);
 
-#if ( DEBUGlevel>=1 )
-    CHECK_MALLOC("Exit main()");
-#endif
-    
+    return x;
 }
 

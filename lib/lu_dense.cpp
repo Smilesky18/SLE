@@ -6,7 +6,7 @@ double Abs(double x)
 {
   return x < 0 ? -x : x;
 }
-void lu_dense(double **A, double *x, int n)
+double* lu_dense(double **A, double *x, int n)
 {
   double **L, **U;
   double sum_U = 0.0, sum_y = 0.0, sum_x = 0.0;
@@ -24,6 +24,8 @@ void lu_dense(double **A, double *x, int n)
   int sum_nonz_L = 0, sum_nonz_U = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
+  double start, finish, start_checksum, finish_checksum, time_checksum, start_max, finish_max, 
+  time_max, start_exchange, finish_exchange, time_exchange, start_LU, finish_LU, time_LU;
   for ( i = 0; i < n; i++ )
   {
     L[i] = ( double * )malloc(sizeof(double) * n);
@@ -83,8 +85,10 @@ void lu_dense(double **A, double *x, int n)
     L[i][i] = 1;
   }
   // start the LU from the second row/column
+  start = microtime();
   for ( r = 1; r < n; r++ )
   {
+    start_checksum = microtime();
     for ( i = r; i < n; i++ )
     {
       for ( k = 0; k < r; k++ )
@@ -96,11 +100,14 @@ void lu_dense(double **A, double *x, int n)
       A[i][r] = A[i][r] - sum; 
       sum = 0.0;
     }
+    finish_checksum = microtime() - start_checksum;
+    time_checksum += finish_checksum;
     /*for ( i = 0; i < n; i++ )
     {
       printf(" check_sum[%d] = %f\n", i, check_sum[i]);
     }*/
     check_max = check_sum[r];
+    start_max = microtime();
     for ( k = r+1; k < n; k++ )
     {
       if ( Abs(check_sum[k]) > Abs(check_max) )
@@ -109,7 +116,10 @@ void lu_dense(double **A, double *x, int n)
 	record_order[r] = k;
       }
     }
+    finish_max = microtime() - start_max;
+    time_max += finish_max;
     // exchange the row of r and record_order[r]
+    start_exchange = microtime();
     if ( record_order[r] != r )
     {
       //printf(" row interchanges!! ");
@@ -127,9 +137,12 @@ void lu_dense(double **A, double *x, int n)
 	L[record_order_temp][i] = temp;
       }
     }
+    finish_exchange = microtime() - start_exchange;
+    time_exchange += finish_exchange;
     // get the r row of U and the r column of L
     U[r][r] = A[r][r];
     //printf("check_max = %f\n", U[r][r]);
+    start_LU = microtime();
     for ( i = r+1; i < n; i++ ) 
     {
       L[i][r] = A[i][r] / U[r][r];
@@ -142,8 +155,17 @@ void lu_dense(double **A, double *x, int n)
       U[r][i] = A[r][i] - sum_U;
       //printf(" U[%d][%d] = %f\n", r, i, U[r][i]);
       sum_U = 0.0;
-    }    
+    }
+    finish_LU = microtime() - start_LU;
+    time_LU += finish_LU;
   }
+  finish = microtime() - start;
+  printf("The time of LU decomposition is %lf\n", finish);
+  printf("The time of generating check_sum array is %lf\n", time_checksum);
+  printf("The time of generating max value is %lf\n", time_max);
+  printf("The time of exchanging the value is %lf\n", time_exchange);
+  printf("The time of generating LU value is %lf\n", time_LU);
+  //printf("The sum short time if %lf\n", time_max+time_exchange);
   //printf("The element of L: ");
   //printf("the value of sum_nonz_L is: %d\n", sum_nonz_L);
   /*for ( i = 0; i < n; i++ )
@@ -211,5 +233,6 @@ void lu_dense(double **A, double *x, int n)
   free(y);
   free(check_sum);
   free(record_order);
+  return x;
 }
 
