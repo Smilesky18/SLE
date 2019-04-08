@@ -2,11 +2,11 @@
 # include <stdlib.h>
 # include "lu.h"
 
-double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
+double* lu_sparse_column(double *a, int *asub, int *xa, int n)
 {
   double **L, **U, *xx;
   double sum_y = 0.0, sum_x = 0.0;
-  double *y;
+  double *y, *x;
   double *check_sum, sum = 0.0;
   double check_max; 
   int i, j, r, k;
@@ -35,6 +35,7 @@ double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
     L[i][i] = 1.0;
   }
   xx = ( double *)malloc(sizeof(double) * n );
+  x = ( double *)malloc(sizeof(double) * n );
   row_num = ( int *)malloc(sizeof(int) * n );
   for ( i = 0; i < n; i++ )
   {
@@ -55,7 +56,7 @@ double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
     {
       for ( i = j+1; i < n; i++ )
       {
-	xx[i] -= xx[i-1]*L[i][j];
+	xx[i] -= xx[j]*L[i][j];
       }
     }
     finish_checksum = microtime() - start_checksum;
@@ -64,7 +65,7 @@ double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
     temp = xx[k];
     for ( i = k+1; i < n; i++ )
     {
-      if ( xx[i] > temp )
+      if ( Abs(xx[i]) > Abs(temp) )
       {
 	temp = xx[i];
 	record_order_temp = i;
@@ -73,8 +74,16 @@ double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
     // change the k'th and max value
     if ( record_order_temp != k )
     {
-      row_num[k] = record_order_temp;
-      row_num[record_order_temp] = k;
+      //row_num[k] = record_order_temp;
+      if ( row_num[k] != k )
+      {
+	row_num[record_order_temp] = k;
+      }
+      else
+      {
+	row_num[record_order_temp] = k;
+        row_num[k] = record_order_temp;
+      } 
       // change the k'th and max value in xx
       temp = xx[k];
       xx[k] = xx[record_order_temp];
@@ -142,11 +151,11 @@ double* lu_sparse_column(double *a, int *asub, int *xa, double *x, int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  /*for ( i = 0; i < n; i++ )
+  for ( i = 0; i < n; i++ )
   {
     //printf("x[%d] = %f\n", i, x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }*/
+  }
   for ( i = 0; i < n; i++ )
   {
     //free(A[i]);

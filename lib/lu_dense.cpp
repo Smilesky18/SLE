@@ -203,11 +203,11 @@ double* lu_dense(double **A, double *x, int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  /*for ( i = 0; i < n; i++ )
+  for ( i = 0; i < n; i++ )
   {
     //printf("x[%d]=%lf ", i, x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }*/
+  }
   for ( i = 0; i < n; i++ )
   {
     //free(A[i]);

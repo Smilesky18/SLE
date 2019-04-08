@@ -2,11 +2,11 @@
 # include <stdlib.h>
 # include "lu.h"
 
-double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
+double* lu_sparse(double *a, int *asub, int *xa, int n)
 {
   double **L, **U;
   double sum_y = 0.0, sum_x = 0.0;
-  double *y;
+  double *y, *x;
   double *check_sum, sum = 0.0;
   double check_max; 
   int i, j, r, k;
@@ -38,6 +38,7 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   row_num = ( int *)malloc(sizeof(int) * n );
   l = ( double *)malloc(sizeof(double) * n );
   u = ( double *)malloc(sizeof(double) * n );
+  x = ( double *)malloc(sizeof(double) * n );
   check_sum = ( double *)malloc(sizeof(double) * n );
   for ( i = 0; i < n; i++ )
   {
@@ -190,11 +191,11 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     x[i] = ( y[i] - sum_x ) / U[i][i];
     sum_x = 0.0;
   }
-  /*for ( i = 0; i < n; i++ )
+  for ( i = 0; i < n; i++ )
   {
     //printf("x[%d] = %f\n", i, x[i]);
     fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }*/
+  }
   for ( i = 0; i < n; i++ )
   {
     //free(A[i]);
