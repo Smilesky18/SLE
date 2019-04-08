@@ -21,7 +21,7 @@ double* lu_dense(double **A, double *x, int n)
   FILE *result = fopen("result/Dense_solution.txt", "w");
   L = ( double ** )malloc(sizeof(double *) * n);
   U = ( double ** )malloc(sizeof(double *) * n);
-  int sum_nonz_L = 0, sum_nonz_U = 0;
+  int sum_nonz_L = 0, sum_nonz_U = 0, sum_pviot_num = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
   double start, finish, start_checksum, finish_checksum, time_checksum, start_max, finish_max, 
@@ -123,6 +123,7 @@ double* lu_dense(double **A, double *x, int n)
     if ( record_order[r] != r )
     {
       //printf(" row interchanges!! ");
+      sum_pviot_num ++;
       record_order_temp = record_order[r];
       for ( i = 0; i < n; i++ )
       {
@@ -160,44 +161,28 @@ double* lu_dense(double **A, double *x, int n)
     time_LU += finish_LU;
   }
   finish = microtime() - start;
+  printf("sum_pviot_num = %d\n", sum_pviot_num);
   printf("The time of LU decomposition is %lf\n", finish);
   printf("The time of generating check_sum array is %lf\n", time_checksum);
   printf("The time of generating max value is %lf\n", time_max);
   printf("The time of exchanging the value is %lf\n", time_exchange);
   printf("The time of generating LU value is %lf\n", time_LU);
-  //printf("The sum short time if %lf\n", time_max+time_exchange);
-  //printf("The element of L: ");
-  //printf("the value of sum_nonz_L is: %d\n", sum_nonz_L);
-  /*for ( i = 0; i < n; i++ )
+  for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
       //printf("L[%d][%d]=%lf\n", i, j, L[i][j]);
       fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
-      if ( L[i][j] != 0 )
-	sum_nonz_L++;
     }
   }
-  L_ratio = (1 - sum_nonz_L/sum_element)*100;
-  //printf("sum_element = %f\n", sum_element);
-  //printf("sum_nonz_L = %d\n", sum_nonz_L);
-  //printf("The sparsity of L is: %lf%%\n", L_ratio);
-  //printf("The element of U: ");
-  //printf(" the value of sum_nonz_U is: %d\n", sum_nonz_U);
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
       //printf("U[%d][%d]=%lf\n", i, j, U[i][j]);
-      fprintf(fp_U, "U[%d][%d]=%lf\n", i, j, U[i][j]);
-      if ( U[i][j] != 0 )
-	sum_nonz_U++;
+      fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
     }
   }
-  U_ratio = (1 - sum_nonz_U/sum_element)*100;*/
-  //printf("sum_nonz_U = %d\n", sum_nonz_U);
-  //printf("The sparsity of U is: %lf%%\n", U_ratio);
-  //Ly = b Ux = y
   y[0] = A[0][n];  
   for ( i = 1; i < n; i++ )
   {

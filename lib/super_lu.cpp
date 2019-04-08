@@ -26,8 +26,9 @@ double* super_lu( char *filename, double *x)
     superlu_options_t options;
     SuperLUStat_t stat;
     FILE      *fp = fopen(filename, "r");
+    FILE      *pviot = fopen("result/Superlu_pviot.txt", "w");
     int i, j;
-    int NUMCol, counter_num = 0;
+    int NUMCol, counter_num = 0, sum_pviot_num = 0;
     
     set_default_options(&options);
 
@@ -69,6 +70,16 @@ double* super_lu( char *filename, double *x)
     dgssv(&options, &A, perm_c, perm_r, &L, &U, &B, &stat, &info);
     //Bstore = (DNformat *)B.Store;
     //nzval_B = (double *)Bstore->nzval;
+    for ( i = 0; i < n; i++ )
+    {
+      if ( perm_r[i] != i )
+      {
+	//printf("sum_pviot_num = %d\n", sum_pviot_num);
+	sum_pviot_num ++;
+      }
+      fprintf(pviot, "perm_r[%d] = %d\n", i, perm_r[i]);
+    }
+    printf("sum_pviot_num = %d\n", sum_pviot_num);
     x = (double*) ((DNformat*) B.Store)->nzval;
     /*for (i=0; i < Bstore->lda; i++)
     {

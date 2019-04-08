@@ -18,10 +18,11 @@ int main( int argc, char *argv[] )
 {
     FILE *fp;
     double *x;
-    double *sparse_x, *dense_x, *super_x;
+    double *sparse_x, *dense_x, *super_x, *sparse_x_column;
     double **A;
-    double start_super, start_sparse, start_dense, finish_super, finish_sparse, finish_dense;
-    double time_super, time_sparse, time_dense;
+    double start_super, start_sparse, start_dense, start_sparse_column, 
+    finish_super, finish_sparse, finish_dense, finish_sparse_column;
+    double time_super, time_sparse, time_dense, time_sparse_column;
     double *h_val;
     int *h_cols;       
     int *h_rowDelimiters;
@@ -40,6 +41,7 @@ int main( int argc, char *argv[] )
     readMatrix(argv[1], &h_val, &h_cols, &h_rowDelimiters, &nItems, &numRows, &numCols);
     x = ( double * )malloc(sizeof(double) * numCols);
     sparse_x = ( double * )malloc(sizeof(double) * numCols);
+    sparse_x_column = ( double * )malloc(sizeof(double) * numCols);
     dense_x = ( double * )malloc(sizeof(double) * numCols);
     super_x = ( double * )malloc(sizeof(double) * numCols);
     A = ( double ** )malloc(sizeof(double *) * m);  
@@ -100,11 +102,28 @@ int main( int argc, char *argv[] )
     sparse_x = lu_sparse( h_val, h_cols, h_rowDelimiters, x, numRows );
     finish_sparse = microtime() - start_sparse;
     time_sparse += finish_sparse;
-    /*for ( i = 0; i < n; i++ )
+    for ( i = 0; i < n; i++ )
     {
       printf("sparse_x[%d] = %lf\n", i , sparse_x[i]);
+    }
+    printf("The average cost time of lu_SPARSE function is: %f seconds\n", time_sparse);
+    printf("-----------------------LU_Sparse_Column----------------------\n");
+    /*for ( i = 0; i < 10; i++ )
+    {
+      start_sparse = microtime();
+      lu_sparse( h_val, h_cols, h_rowDelimiters, x, numRows );
+      finish_sparse = microtime() - start_sparse; 
+      time_sparse += finish_sparse;
     }*/
-    printf("The average cost time of lu_SPARSE function is: %f seconds\n", time_sparse); 
+    start_sparse_column = microtime();
+    sparse_x_column = lu_sparse_column( a, asub, xa, x, numRows );
+    finish_sparse_column = microtime() - start_sparse_column;
+    time_sparse_column += finish_sparse_column;
+    for ( i = 0; i < n; i++ )
+    {
+      printf("sparse_x_column[%d] = %lf\n", i , sparse_x_column[i]);
+    }
+    printf("The average cost time of lu_sparse_column function is: %f seconds\n", time_sparse_column); 
     printf("-----------------------LU_Dense----------------------\n");
     /*for ( i = 0; i < 10; i++ )
     {

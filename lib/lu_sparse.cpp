@@ -17,9 +17,10 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   FILE *fp_L = fopen("result/Sparse_L.txt", "w");
   FILE *fp_U = fopen("result/Sparse_U.txt", "w");
   FILE *result = fopen("result/Sparse_solution.txt", "w");
+  FILE *pviot = fopen("result/Sparse_pviot.txt", "w");
   L = ( double ** )malloc(sizeof(double *) * n);
   U = ( double ** )malloc(sizeof(double *) * n);
-  int sum_nonz_L = 0, sum_nonz_U = 0;
+  int sum_nonz_L = 0, sum_nonz_U = 0, sum_pviot_num = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
   double start, finish, start_l, finish_l, time_l, start_checksum, finish_checksum, time_checksum, start_max, finish_max, 
@@ -70,7 +71,7 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
       check_sum[i] = l[i] - sum;
       l[i] = l[i] - sum;
       sum = 0.0;
-    }
+    }         
     finish_checksum = microtime() - start_checksum;
     time_checksum += finish_checksum;
    
@@ -88,6 +89,7 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     finish_max = microtime() - start_max;
     time_max += finish_max;
     
+    fprintf(pviot, "perm_r[%d] = %d\n", r, record_order_temp);
     start_exchange = microtime();
     U[r][r] = check_max;
     i = p[r];
@@ -102,6 +104,7 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     // exchange the row of r and record_order_temp 
     if ( record_order_temp != r )
     {
+      sum_pviot_num ++;
       for ( i = 0; i < r; i++ )
       {
 	temp = L[r][i];
@@ -141,6 +144,7 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
     }
   }
   finish = microtime() - start;
+  printf("sum_pviot_num = %d\n", sum_pviot_num);
   printf("The time of LU decomposition is %lf\n", finish);
   printf("The time of generating l array is %lf\n", time_l);
   printf("The time of generating check_sum array is %lf\n", time_checksum);
@@ -150,36 +154,22 @@ double* lu_sparse(double *a, int *asub, int *xa, double *x, int n)
   printf("The time of generating LU value is %lf\n", time_LU);
   printf("The sum short time if %lf\n", time_l+time_max+time_exchange+time_u);
   y = ( double * )malloc(sizeof(double) * n);
- /* for ( i = 0; i < n; i++ )
+  for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
       //printf("L[%d][%d]=%lf\n", i, j, L[i][j]);
       fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
-      if ( L[i][j] != 0 )
-	sum_nonz_L++;
     }
   }
-  L_ratio = (1 - sum_nonz_L/sum_element)*100;
-  //printf("sum_element = %f\n", sum_element);
-  //printf("sum_nonz_L = %d\n", sum_nonz_L);
-  //printf("The sparsity of L is: %lf%%\n", L_ratio);
-  //printf("The element of U: ");
-  //printf(" the value of sum_nonz_U is: %d\n", sum_nonz_U);
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
       //printf("U[%d][%d]=%lf\n", i, j, U[i][j]);
       fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
-      if ( U[i][j] != 0 )
-	sum_nonz_U++;
     }
   }
-  U_ratio = (1 - sum_nonz_U/sum_element)*100;*/
-  //printf("sum_nonz_U = %d\n", sum_nonz_U);
-  //printf("The sparsity of U is: %lf%%\n", U_ratio);
-  //solve Ly=b && Ux=y
   y[0] = 1.0;  
   for ( i = 1; i < n; i++ )
   {

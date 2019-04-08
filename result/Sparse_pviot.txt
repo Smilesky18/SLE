@@ -1,0 +1,9 @@
+perm_r[0] = 0
+perm_r[1] = 1
+perm_r[2] = 2
+perm_r[3] = 3
+perm_r[4] = 4
+perm_r[5] = 5
+perm_r[6] = 6
+perm_r[7] = 7
+perm_r[8] = 8
