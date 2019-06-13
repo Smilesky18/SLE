@@ -26,7 +26,10 @@
 /*! \brief Driver routines */
 extern double* lu_dense(double **, double *, int );
 extern double* lu_sparse(double *, int *, int *, int );
-extern double* lu_sparse_column(double *, int *, int *, int );
+extern double* lu_gp(double *, int *, int *, int );
+extern double* lu_gp_v2(double *, int *, int *, int );
+extern double* lu_gp_v3(double *, int *, int *, int );
+extern double* lu_gp_amd(double *, int *, int *, int );
 extern double* super_lu(char *, double *);
 extern void readMatrix(char *, double **, int **, int **, int *, int *, int *);
 extern double Abs(double );

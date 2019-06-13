@@ -26,6 +26,7 @@ double* super_lu( char *filename, double *x)
     superlu_options_t options;
     SuperLUStat_t stat;
     FILE      *fp = fopen(filename, "r");
+    FILE      *result = fopen("result/Superlu_solution.txt", "w");
     FILE      *pviot = fopen("result/Superlu_pviot.txt", "w");
     int i, j;
     int NUMCol, counter_num = 0, sum_pviot_num = 0;
@@ -68,6 +69,10 @@ double* super_lu( char *filename, double *x)
     //Bstore = (DNformat *)B.Store;
     //nzval_B = (double *)Bstore->nzval;
     dgssv(&options, &A, perm_c, perm_r, &L, &U, &B, &stat, &info);
+    Lstore = (SCformat *) L.Store;
+    Ustore = (NCformat *) U.Store;
+    printf("No of nonzeros in factor L = %d\n", Lstore->nnz);
+    printf("No of nonzeros in factor U = %d\n", Ustore->nnz);
     //Bstore = (DNformat *)B.Store;
     //nzval_B = (double *)Bstore->nzval;
     for ( i = 0; i < n; i++ )
@@ -81,11 +86,13 @@ double* super_lu( char *filename, double *x)
     }
     printf("sum_pviot_num = %d\n", sum_pviot_num);
     x = (double*) ((DNformat*) B.Store)->nzval;
-    /*for (i=0; i < Bstore->lda; i++)
+    for (i=0; i < Bstore->lda; i++)
     {
-      printf("x[%d] = %lf\n", i, x[i]);
-    }*/
-    if ( options.PrintStat ) StatPrint(&stat);
+      fprintf(result, "x[%d]=%lf\n", i, x[i]);
+    }
+    //if ( options.PrintStat ) 
+    StatPrint(&stat);
+    printf("stat.pviots = %d\n", stat.TinyPivots);
     StatFree(&stat);
 
    // SUPERLU_FREE (rhs);

@@ -44,6 +44,8 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
   {
     p[i] = xa[i];
     row_num[i] = xa[i+1] - xa[i];
+//     printf(" l[%d] = %lf\n ", i, l[i]);
+//     printf(" u[%d] = %lf\n ", i, u[i]);
   }
   //printf(" before the LU decomposition ");
   start = microtime();
@@ -159,8 +161,10 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
   {
     for( j = 0; j < n; j++ )
     {
-      //printf("L[%d][%d]=%lf\n", i, j, L[i][j]);
-      fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
+      if ( L[i][j] != 0 )
+      {
+	fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
+      }
     }
   }
   for ( i = 0; i < n; i++ )
@@ -168,7 +172,10 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
     for( j = 0; j < n; j++ )
     {
       //printf("U[%d][%d]=%lf\n", i, j, U[i][j]);
-      fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
+      if ( U[i][j] != 0 )
+      {
+	fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
+      }
     }
   }
   y[0] = 1.0;  
@@ -209,4 +216,3 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
   //free(change_order);
   return x;
 }
-
