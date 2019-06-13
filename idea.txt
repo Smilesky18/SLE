@@ -1,4 +1,0 @@
-There are many difficulties in solving Ax = b: 1. only non-zero values are stored 2. L and U have far more non-zeros than A 3. Data structures are complex
-                                               4. computations are only a small portion of the code, the rest is data manipulation
-                                               5. memory size is a limiting factor
-间接内存访问通常用于对sparse的操作，所以只要矩阵没有足够的sparse，那么就转换成dense计算。
