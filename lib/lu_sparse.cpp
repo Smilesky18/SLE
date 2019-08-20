@@ -2,14 +2,14 @@
 # include <stdlib.h>
 # include "lu.h"
 
-double* lu_sparse(double *a, int *asub, int *xa, int n)
+double* lu_sparse(double *a, int *asub, int *xa, int n, int nzl, int nzu, int *perm_c, int *perm_r)
 {
-  double **L, **U;
+  double *L, *U;
   double sum_y = 0.0, sum_x = 0.0;
   double *y, *x;
   double *check_sum, sum = 0.0;
   double check_max; 
-  int i, j, r, k;
+  int i, j, r, k, current_column;
   int *p, *row_num;
   double *l, *u, l_value;
   double temp = 0.0;
@@ -18,22 +18,14 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
   FILE *fp_U = fopen("result/Sparse_U.txt", "w");
   FILE *result = fopen("result/Sparse_solution.txt", "w");
   FILE *pviot = fopen("result/Sparse_pviot.txt", "w");
-  L = ( double ** )malloc(sizeof(double *) * n);
-  U = ( double ** )malloc(sizeof(double *) * n);
+  L = ( double * )malloc(sizeof(double *) * n);
+  U = ( double * )malloc(sizeof(double *) * n);
   int sum_nonz_L = 0, sum_nonz_U = 0, sum_pviot_num = 0;
   double sum_element = n * n;
   double L_ratio, U_ratio;
   double start, finish, start_l, finish_l, time_l, start_checksum, finish_checksum, time_checksum, start_max, finish_max, 
   time_max, start_exchange, finish_exchange, time_exchange, start_u, finish_u, time_u, start_LU, finish_LU, time_LU;
-  for ( i = 0; i < n; i++ )
-  {
-    L[i] = ( double * )malloc(sizeof(double) * n);
-    U[i] = ( double * )malloc(sizeof(double) * n);
-  }
-  for ( i = 0; i < n; i++ )
-  {
-    L[i][i] = 1.0;
-  }
+  
   p = ( int * )malloc(sizeof(int) * n );
   row_num = ( int *)malloc(sizeof(int) * n );
   l = ( double *)malloc(sizeof(double) * n );
@@ -52,6 +44,8 @@ double* lu_sparse(double *a, int *asub, int *xa, int n)
   for ( r = 0; r < n; r++ )
   {
     start_l = microtime();
+    // current_column存储的是要计算的当前列
+    current_column = perm_c[r];
     for ( i = r; i < n; i++ )
     {
       if ( asub[p[i]] == r && row_num[i] > 0 )

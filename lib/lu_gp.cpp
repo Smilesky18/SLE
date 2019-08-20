@@ -35,8 +35,8 @@ double* lu_gp(double *a, int *asub, int *xa, int n)
     {
       for ( j = 0; j < n; j++ )
       {
-	L[i][j] = 0.0;
-	U[i][j] = 0.0;
+        L[i][j] = 0.0;
+        U[i][j] = 0.0;
       }
     }
   for ( i = 0; i < n; i++ )
@@ -65,7 +65,7 @@ double* lu_gp(double *a, int *asub, int *xa, int n)
     {
       for ( i = j+1; i < n; i++ )
       {
-	xx[i] -= xx[j]*L[i][j];
+        xx[i] -= xx[j]*L[i][j];
       }
     }
     finish_cal = microtime() - start_cal;
@@ -133,21 +133,22 @@ double* lu_gp(double *a, int *asub, int *xa, int n)
     }
   }
   finish = microtime() - start;
-  printf("The time of LU_column decomposition is %lf\n", finish);
-  //printf(" The number of pvioting is %d\n", sum_pviot_num);
-  printf(" sum pivot time is: %lf\n ", sum_pivot);
-  printf(" sum pivot number time is: %d\n ", sum_pviot_num);
-  printf(" sum calculate time is: %lf\n ", sum_cal);	
+//   printf("The time of LU_column decomposition is %lf\n", finish);
+//   //printf(" The number of pvioting is %d\n", sum_pviot_num);
+//   printf(" sum pivot time is: %lf\n ", sum_pivot);
+//   printf(" sum pivot number time is: %d\n ", sum_pviot_num);
+//   printf(" sum calculate time is: %lf\n ", sum_cal);	
   y = ( double * )malloc(sizeof(double) * n);
   for ( i = 0; i < n; i++ )
   {
     for( j = 0; j < n; j++ )
     {
       //printf("L[%d][%d]=%lf\n", i, j, L[i][j]);
-      if ( L[i][j] != 0 )
+      if ( L[j][i] != 0 )
       {
-	sum_nonz_L ++;
-	fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
+        sum_nonz_L ++;
+//         printf("L[%d][%d]=%lf\n", j, i, L[j][i]);
+// 	fprintf(fp_L, "L[%d][%d]=%lf\n", i, j, L[i][j]);
       }
       
     }
@@ -156,41 +157,42 @@ double* lu_gp(double *a, int *asub, int *xa, int n)
   {
     for( j = 0; j < n; j++ )
     {
-      if ( U[i][j] != 0 )
+      if ( U[j][i] != 0 )
       {
-	sum_nonz_U ++;
-	fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
+        sum_nonz_U ++;
+//         printf("U[%d][%d]=%e\n", j, i, U[j][i]);
+// 	fprintf(fp_U, "U[%d][%d]=%f\n", i, j, U[i][j]);
       }
       //printf("U[%d][%d]=%lf\n", i, j, U[i][j]);
       
     }
   }
   printf(" #nnz of L is: %d   #nnz of U is: %d\n", sum_nonz_L, sum_nonz_U);
-  y[0] = 1.0;  
-  for ( i = 1; i < n; i++ )
-  {
-    for ( k = 0; k < i; k++ )
-    {
-      sum_y += L[i][k]*y[k]; 
-    }
-    y[i] = 1.0 - sum_y;
-    sum_y = 0.0;
-  }
-  x[n-1] = y[n-1] / U[n-1][n-1];
-  for ( i = n-2; i >= 0; i-- )
-  {
-    for ( k = i + 1; k < n; k++ )
-    {
-      sum_x += U[i][k]*x[k];
-    }
-    x[i] = ( y[i] - sum_x ) / U[i][i];
-    sum_x = 0.0;
-  }
-  for ( i = 0; i < n; i++ )
-  {
-    //printf("x[%d] = %f\n", i, x[i]);
-    fprintf(result, "x[%d]=%lf\n", i, x[i]);
-  }
+//   y[0] = 1.0;  
+//   for ( i = 1; i < n; i++ )
+//   {
+//     for ( k = 0; k < i; k++ )
+//     {
+//       sum_y += L[i][k]*y[k]; 
+//     }
+//     y[i] = 1.0 - sum_y;
+//     sum_y = 0.0;
+//   }
+//   x[n-1] = y[n-1] / U[n-1][n-1];
+//   for ( i = n-2; i >= 0; i-- )
+//   {
+//     for ( k = i + 1; k < n; k++ )
+//     {
+//       sum_x += U[i][k]*x[k];
+//     }
+//     x[i] = ( y[i] - sum_x ) / U[i][i];
+//     sum_x = 0.0;
+//   }
+//   for ( i = 0; i < n; i++ )
+//   {
+//     //printf("x[%d] = %f\n", i, x[i]);
+//     fprintf(result, "x[%d]=%lf\n", i, x[i]);
+//   }
  // x[n] = sum_pivot;
   return x;
 }

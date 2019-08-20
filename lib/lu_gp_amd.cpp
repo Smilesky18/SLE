@@ -13,7 +13,8 @@ double* lu_gp_amd(double *a, int *asub, int *xa, int n)
   int i, j, r, k;
   int change_k, change_record_order;
   int *p, *row_num;
-  int *P;
+  int *P, *Pinv, *per_asub;
+  int nnz = xa[n];
   double *Control, *Info;
   double *l, *u, l_value;
   double temp = 0.0;
@@ -22,9 +23,13 @@ double* lu_gp_amd(double *a, int *asub, int *xa, int n)
   FILE *fp_U = fopen("result/Sparse_GP_U.txt", "w");
   FILE *result = fopen("result/Sparse_GP_solution.txt", "w");
   FILE *pivot = fopen("result/Sparse_GP_pivot.txt", "w");
+  FILE *per_array = fopen("per_array.txt", "w");
+  FILE *pinv_file = fopen("pinv.txt", "w");
   L = ( double ** )malloc(sizeof(double *) * n);
   U = ( double ** )malloc(sizeof(double *) * n);
   P = ( int *)malloc(sizeof(int) * n );
+  Pinv = ( int *)malloc(sizeof(int) * n );
+  per_asub= ( int *)malloc(sizeof(int) * nnz );
   Control = ( double * )malloc(sizeof(double) * 5);
   Info = ( double * )malloc(sizeof(double) * 20);
   int sum_nonz_L = 0, sum_nonz_U = 0, sum_pviot_num = 0;
@@ -35,6 +40,29 @@ double* lu_gp_amd(double *a, int *asub, int *xa, int n)
   amd_defaults (Control) ;
   amd_control  (Control) ;
   amd_order (n, xa, asub, P, Control, Info);
+  printf(" asub[0] = %d\n ", asub[0]);
+  printf(" asub[%d] = %d\n ", xa[n-1], asub[xa[n-1]]);
+  for (k = 0 ; k < n ; k++)
+  {
+	j = P [k] ;
+	Pinv [j] = k ;
+  }
+  printf(" xa[n] = %d\n ", xa[n]);
+  for ( i = 0; i < n; i++ )
+  {
+      fprintf(pinv_file, "%d\n", Pinv[i]);
+}
+  for ( i = 0; i < nnz; i++ )
+  {
+      per_asub[i] = Pinv[asub[i]];
+}
+  for ( i = 0; i < nnz; i++ )
+  {
+      fprintf(per_array, "%d\n", per_asub[i]);
+      printf("%d\n ", Pinv[asub[i]]+1);
+   //   fprintf(per_array, " this is %d row\n ", i);
+  }
+  printf( " i = %d\n ", i);
   printf(" Info [AMD_LNZ] = %lf\n ", 2*Info [AMD_LNZ]);
 //   for ( i = 0; i < n; i++ )
 //   {

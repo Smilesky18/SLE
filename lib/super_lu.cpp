@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-double* super_lu( char *filename, double *x)
+int super_lu( char *filename, double *x)
 {
     SuperMatrix A;
     NCformat *Astore;
@@ -71,28 +71,42 @@ double* super_lu( char *filename, double *x)
     dgssv(&options, &A, perm_c, perm_r, &L, &U, &B, &stat, &info);
     Lstore = (SCformat *) L.Store;
     Ustore = (NCformat *) U.Store;
-    printf("No of nonzeros in factor L = %d\n", Lstore->nnz);
-    printf("No of nonzeros in factor U = %d\n", Ustore->nnz);
-    //Bstore = (DNformat *)B.Store;
-    //nzval_B = (double *)Bstore->nzval;
-    for ( i = 0; i < n; i++ )
-    {
-      if ( perm_r[i] != i )
-      {
-	//printf("sum_pviot_num = %d\n", sum_pviot_num);
-	sum_pviot_num ++;
-      }
-      fprintf(pviot, "perm_r[%d] = %d\n", i, perm_r[i]);
-    }
-    printf("sum_pviot_num = %d\n", sum_pviot_num);
-    x = (double*) ((DNformat*) B.Store)->nzval;
-    for (i=0; i < Bstore->lda; i++)
-    {
-      fprintf(result, "x[%d]=%lf\n", i, x[i]);
-    }
+//     printf("No of nonzeros in factor L = %d\n", Lstore->nnz);
+//     printf("No of nonzeros in factor U = %d\n", Ustore->nnz);
+//     //Bstore = (DNformat *)B.Store;
+//     //nzval_B = (double *)Bstore->nzval;
+//     for ( i = 0; i < n; i++ )
+//     {
+//       if ( perm_r[i] != i )
+//       {
+// 	//printf("sum_pviot_num = %d\n", sum_pviot_num);
+// 	sum_pviot_num ++;
+//       }
+//       fprintf(pviot, "perm_r[%d] = %d\n", i, perm_r[i]);
+//     }
+//     printf("sum_pviot_num = %d\n", sum_pviot_num);
+//     x = (double*) ((DNformat*) B.Store)->nzval;
+//     for (i=0; i < Ustore->nnz; i++)
+//     {
+//       printf("%d ", Ustore->rowind[i]);
+//     }
+//     for ( i = 0; i < n; i++)
+//     {
+//         printf("%d ", Ustore->colptr[i]);
+//     }
     //if ( options.PrintStat ) 
-    StatPrint(&stat);
-    printf("stat.pviots = %d\n", stat.TinyPivots);
+//     StatPrint(&stat);
+//     printf("stat.pviots = %d\n", stat.TinyPivots);
+//     for ( i = 0; i < n; i++ )
+//     {
+//         printf("%d ", perm_r[i]);
+//     }
+//     printf("\n");
+//     for ( i = 0; i < n; i++ )
+//     {
+//         printf("%d ", perm_c[i]);
+//     }
+    
     StatFree(&stat);
 
    // SUPERLU_FREE (rhs);
@@ -104,6 +118,6 @@ double* super_lu( char *filename, double *x)
    // Destroy_SuperNode_Matrix(&L);
   //  Destroy_CompCol_Matrix(&U);
 
-    return x;
+    return Ustore->nnz;
 }
 
