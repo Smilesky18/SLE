@@ -36,7 +36,7 @@ typedef struct lu_data_stru    /* matrix in compressed-column or triplet form */
 /*! \brief Driver routines */
 extern double* lu_dense(double **, double *, int );
 extern double* lu_sparse(double *, int *, int *, int, int, int );
-extern double* lu_gp_sparse(double *, int *, int *, int, int, int, int *, int *, int *, int *, int *, int * , double *, double * );
+extern void* lu_gp_sparse(double *, int *, int *, int, int, int, int *, int *, int *, int *, int *, int * , double *, double * );
 extern void* sparse_load(FILE *, int, int, int *, int *, int *, int *, int *, int * );
 extern double* lu_gp(double *, int *, int *, int );
 extern double* lu_gp_v2(double *, int *, int *, int );

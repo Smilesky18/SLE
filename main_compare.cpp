@@ -109,9 +109,7 @@ int main( int argc, char *argv[] )
     fp = fopen(argv[1], "r");
     fpp = fopen(argv[2], "r");
 //     printf("argv[1] = %s\n", argv[1]);
-    printf("00000000");
     dreadMM(fp, &mm, &nn, &nnz, &a, &asub, &xa);
-    printf("11111111");
     nnn = nn + 1;
     perm_c = (int *)malloc(sizeof(int) * nn );
     perm_r = (int *)malloc(sizeof(int) * nn );
@@ -205,9 +203,8 @@ int main( int argc, char *argv[] )
 //     printf("\ncolumn offset of U is: ");
 //     for ( i = 0; i <= n; i++ ) printf("%d ", xa_U[i]);
     
-    xx = (double *)malloc(sizeof(int) * n);
     sparse_start = microtime();
-    xx = lu_gp_sparse(a, asub, xa, n, nzl, nzu, perm_c, iperm_r, asub_L, xa_L, asub_U, xa_U, N->L->x, N->U->x);
+    lu_gp_sparse(a, asub, xa, n, nzl, nzu, perm_c, iperm_r, asub_L, xa_L, asub_U, xa_U, N->L->x, N->U->x);
     sparse_end = microtime() - sparse_start;
     printf(" the time of sparse is %lf\n", sparse_end);
    
