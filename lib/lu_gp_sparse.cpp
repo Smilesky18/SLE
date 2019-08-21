@@ -2,7 +2,6 @@
 # include <stdlib.h>
 # include "lu.h"
 
-
 bool equal( double a, double b )
 {
   if ( Abs(a-b) < 0.001)
@@ -15,6 +14,10 @@ bool equal( double a, double b )
   }
 }
 
+double Abs(double x)
+{
+  return x < 0 ? -x : x;
+}
 
 void* lu_gp_sparse(double *a, int *asub, int *xa, int n, int nzl, int nzu, int *perm_c, int *perm_r, int *asub_L, int *xa_L, int *asub_U, int *xa_U, double *l_data, double *u_data)
 {
