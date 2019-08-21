@@ -22,6 +22,6 @@ all: main.cpp
 # 	g++ -g lib/super_lu.cpp lib/lu_dense.cpp lib/lu_gp.cpp lib/lu_gp_amd.cpp lib/lu_gp_v2.cpp lib/lu_gp_v3.cpp lib/readMatrix.cpp main_compare.cpp lib/microtime.cpp lib/lu_gp_sparse.cpp -fpermissive /usr/local/lib/libcxsparse.a /usr/local/lib/libamd.a /usr/local/lib/libsuitesparseconfig.a -fPIC -lsuperlu -lblas -lm -o  main_compare.g
 	
 debug: main_compare.cpp
-	g++ -g lib/readMatrix.cpp main_compare.cpp lib/microtime.cpp lib/lu_gp_sparse.cpp -fpermissive /usr/local/lib/libcxsparse.a /usr/local/lib/libsuitesparseconfig.a -fPIC -lsuperlu -lblas -lm -o  main_compare.g
+	g++ -O2 src/readMatrix.cpp main_compare.cpp src/microtime.cpp src/lu_gp_sparse.cpp -fpermissive Lib/libcxsparse.a Lib/libsuitesparseconfig.a -fPIC -lsuperlu -lblas -lm -o main_compare.g
 clean:
 	rm -rf  main main_compare.g

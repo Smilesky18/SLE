@@ -8,8 +8,8 @@ double microtime(){
         int tv_sec,tv_usec;
         double time;
         struct timeval tv;
-        struct timezone tz;
-        gettimeofday(&tv,&tz);
+//         struct timezone tz;
+        gettimeofday(&tv,NULL);
 
         return tv.tv_sec+tv.tv_usec/MICRO_IN_SEC;
 }

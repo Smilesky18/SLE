@@ -1,4 +1,4 @@
-#include "lib/lu.h"
+#include "Lib/lu.h"
 #include <stdio.h>
 #include <stdlib.h>
 # include "cs.h"
