@@ -18,24 +18,16 @@ bool equal( double a, double b )
 
 void* lu_gp_sparse(double *a, int *asub, int *xa, int n, int nzl, int nzu, int *perm_c, int *perm_r, int *asub_L, int *xa_L, int *asub_U, int *xa_U, double *l_data, double *u_data)
 {
-  lu_data *lu_array_data;
   int sum_l = 0, sum_u = 0;
   double *L, *U, *xx;
-  double sum_y = 0.0, sum_x = 0.0, U_diag;
-  double *y;
-  double *check_sum, sum = 0.0;
-  double check_max; 
+  double U_diag;
   int i, j, r, k, current_column;
-  int change_k, change_record_order;
-  int *p, *row_num;
+  int *row_num;
   double *l, *u, l_value;
   double temp = 0.0;
-  int record_order_temp;
   L = ( double * )malloc(sizeof(double *) * nzl);
   U = ( double * )malloc(sizeof(double *) * nzu);
   int sum_nonz_L = 0, sum_nonz_U = 0, sum_pviot_num = 0;
-  double sum_element = n * n;
-  double L_ratio, U_ratio;
   double start, finish, start_pivot, finish_pivot, sum_pivot = 0.0, start_cal, finish_cal, sum_cal = 0.0;
   int m = n + 1;
   xx = ( double *)malloc(sizeof(double) * n );
