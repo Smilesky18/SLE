@@ -1,5 +1,0 @@
-x[0]=-nan
-x[1]=-nan
-x[2]=-nan
-x[3]=-nan
-x[4]=-nan
