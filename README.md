@@ -7,5 +7,6 @@
 3) change the array references to pointers. 
 
 Enter the SLE/ directory: make all
+
 Example 1:  ./main dataset/ASIC_100k.mtx dataset/ASIC_100k
 
