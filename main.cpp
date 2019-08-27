@@ -86,16 +86,16 @@ int main( int argc, char *argv[] )
     double csparse_start, csparse_end, sparse_start, sparse_end; 
     nnn = nn + 1;
     file1 = fopen(argv[1], "r");
-    file2 = fopen(argv[2], "r");
-    dreadMM(file1, &mm, &nn, &nnz, &a, &asub, &xa);
+//     file2 = fopen(argv[2], "r");
+//     dreadMM(file1, &mm, &nn, &nnz, &a, &asub, &xa);
     
-    printf("\n********************Matrix Information********************\n");
-    printf("Num of Rows: %d\n", mm);
-    printf("Num of Columns: %d\n", nn);
-    printf("Num of non-zeros: %d\n", nnz);
+//     printf("\n********************Matrix Information********************\n");
+//     printf("Num of Rows: %d\n", mm);
+//     printf("Num of Columns: %d\n", nn);
+//     printf("Num of non-zeros: %d\n", nnz);
     
     /* CSparse LU decomposition*/
-    problem *Prob = get_problem (file2, 1e-14) ;
+    problem *Prob = get_problem (file1, 1e-14) ;
     cs *A, *C ;
     double *b, *x, *resid,  t, tol ;
     int k, m, n, order, nb, ns, *r, *s, *rr, sprank ;
@@ -138,7 +138,7 @@ int main( int argc, char *argv[] )
     /* MY LU Decomposition */
     printf("\n********************MY LU Decomposition: Check Results********************\n");
     sparse_start = microtime();
-    lu_gp_sparse(a, asub, xa, n, N->L->nzmax, N->U->nzmax, S->q, N->pinv, N->L->i, N->L->p, N->U->i, N->U->p, N->L->x, N->U->x);
+    lu_gp_sparse(C->x, C->i, C->p, n, N->L->nzmax, N->U->nzmax, S->q, N->pinv, N->L->i, N->L->p, N->U->i, N->U->p, N->L->x, N->U->x);
     sparse_end = microtime() - sparse_start;
     printf("Time of MY LU Decomposition: %lf\n", sparse_end);
     
